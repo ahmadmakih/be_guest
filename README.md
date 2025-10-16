@@ -1,132 +1,98 @@
-# 📱 Devices API
+# Express + TypeScript + Prisma Boilerplate
 
-A simple, robust, and well-structured REST API for managing electronic devices, including validation, domain rules, full test coverage, and production-ready Docker deployment.
+This is a boilerplate for Express + TypeScript + Prisma. also we are implementing DDD (Domain-Driven Design) with Prisma but we are ignoring Domain/Models since Prisma already have it.
 
-[![Deploy on Render](https://img.shields.io/badge/render-live-blue?logo=render)](https://devices-api.onrender.com)
-[![Swagger](https://img.shields.io/badge/docs-swagger-blue.svg)](https://devices-api.onrender.com/api-docs)
-[![Tests](https://img.shields.io/badge/tests-92%25-brightgreen)](#tests)
-[![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](#)
+## TODO
 
----
+- [x] User Registration API
+- [x] User Login API
+- [x] Auth Middleware
+- [x] Get Current User / Authenticated User
+- [x] Logout Authenticated User
+- [x] Redis Cache
+- [x] JWT Auth
+- [x] Reset Prisma Migration so it will Clean
+- [x] Dockerfile & Docker Compose
+- [ ] Prometheus Metrics Setup
+- [ ] Swagger Documentation
 
-## ✨ Features
+## Dependencies
 
-- ✅ Clean Architecture (Domain, Application, Infra, Presentation)
-- 🔐 Business rules encapsulated in the domain layer
-- 🔄 CRUD operations for devices
-- 🛡 Input validation with **Zod**
-- 📄 Swagger auto-generated documentation
-- 🛡️ Helmet + CORS + Rate Limiting
-- ❤️ Error handling with centralized `AppError` class
-- ⚙️ Healthcheck endpoint at `/health`
-- ✅ 92%+ test coverage with **Jest** and **Supertest**
-- 🐳 Dockerized
-- ☁️ Deployed live on **Render**
+`npm install`
 
----
+## Run
 
-## 📚 Documentation
+`npm run build && npm run start`
 
-- **Live API:** https://devices-api.onrender.com
-- **Swagger UI:** https://devices-api.onrender.com/api-docs  
-  > You can explore and test all routes directly in the browser.
+## Run Dev
 
-> ⚠️ This API is hosted on a free Render instance.  
-> It **sleeps after inactivity** and may take **~50s to wake up** on first request.
+`npm run dev`
 
----
+## Prisma Migration
 
-## 🧪 Tech Stack
+`npx prisma migrate dev`
 
-- **Node.js + TypeScript**
-- **Express** (HTTP Server)
-- **Prisma ORM** with SQLite
-- **Zod** (schema validation)
-- **Jest** and **Supertest** (unit/integration tests)
-- **Swagger-jsdoc** + **swagger-ui-express**
-- **Docker** (multi-stage build)
-- **Render** (deployment)
+## Prisma
 
----
+`npx prisma generate`
 
-## 🚀 Getting Started
+## Run Completely
 
-### 1. Clone the project
-
-```bash
-git clone https://github.com/vcantelli/devices-api.git
-cd devices-api
-```
-
-### 2. Install dependencies
-
-```bash
+```shell
 npm install
-```
 
-### 3. Set up environment variables
+npx prisma migrate dev
 
-Create a `.env` file at the root (optional, defaults are safe):
-
-```env
-PORT=3000
-DATABASE_URL="file:./dev.db"
-```
-
-### 4. Run migrations & generate Prisma client
-
-```bash
 npx prisma generate
-npx prisma db push
+
+npm run build
+
+npm run start
 ```
+    <!-- "@types/ioredis": "^5.0.0", -->
+    <!-- "ioredis": "^5.4.1", -->
 
-### 5. Start the app
+anda adalah senior programmer backend 10 tahun berpengalaman
+Struktur Folder Kombinasi Clean + DDD + SOLID + TDD yang umum digunakan
+src/
+ ├── domain/                     # Lapisan inti bisnis (pure logic)
+ │   ├── entities/               # Entity DDD (representasi object bisnis)
+ │   ├── valueObjects/           # Nilai yang tak memiliki identity unik
+ │   └── repositories/           # Interface (kontrak) untuk akses data
+ │
+ ├── application/                # Lapisan use case (interaksi domain)
+ │   ├── usecases/               # Logic proses bisnis (use case)
+ │   └── services/               # Service tambahan (helper bisnis)
+ │
+ ├── infrastructure/             # Implementasi teknis (I/O, ORM, dll)
+ │   ├── database/               # Koneksi DB (pool, client, migration)
+ │   ├── prisma/                 # Prisma schema, migrations, adapters
+ │   ├── config/                 # Env, Logger, Swagger setup
+ │   ├── monitoring/             # Prometheus metrics collector
+ │   ├── logger/                 # Winston setup (log format, transports)
+ │   └── repositoryImpl/         # Implementasi repository dari domain/
+ │
+ ├── interface/                  # Lapisan interaksi user/system (HTTP)
+ │   ├── controllers/            # Controller Express (terima & kirim response)
+ │   ├── routes/                 # Definisi route Express
+ │   ├── middleware/             # Middleware (auth, error handler, logging)
+ │   └── validators/             # Validasi input (Joi/Yup/zod)
+ │
+ ├── tests/                      # Folder testing (TDD-ready)
+ │   ├── unit/                   # Unit test tiap komponen kecil
+ │   ├── integration/            # Test integrasi antar komponen
+ │   ├── mocks/                  # Mock data & dependency injection
+ │   └── e2e/                    # End-to-end test (API test via supertest)
+ │
+ ├── main.js                     # Entry point app
+ └── app.js                      # Inisialisasi Express & dependency injection
 
-```bash
-npm run dev
-```
-
-### 6. Run tests
-
-```bash
-npm test
-```
-
-To check test coverage:
-
-```bash
-npm run test:coverage
-```
-
----
-
-## 🧪 API Endpoints (Overview)
-
-| Method | Endpoint               | Description                     |
-|--------|------------------------|---------------------------------|
-| GET    | `/devices`             | List all devices                |
-| POST   | `/devices`             | Create new device               |
-| GET    | `/devices/:id`         | Get device by ID                |
-| PATCH  | `/devices/:id`         | Update device (partial/full)    |
-| DELETE | `/devices/:id`         | Delete device (if not in-use)   |
-| GET    | `/devices/brand/:brand`| Filter by brand                 |
-| GET    | `/devices/state/:state`| Filter by state (available...)  |
-
-> Check full documentation at [Swagger UI](https://devices-api.onrender.com/api-docs)
-
----
-
-## 🛠 Possible Improvements
-
-- 🔄 **Pagination** on `GET /devices` for better scalability
-- 🧑‍💻 Authentication layer (JWT or OAuth)
-- 🗃 Swap SQLite for PostgreSQL or other production-ready DB
-- 💾 Add caching layer (e.g. Redis) for frequent reads
-- 📊 Metrics and monitoring (e.g. Prometheus + Grafana)
-- ☁️ CI/CD pipeline (e.g., GitHub Actions for tests and deploy)
-
----
-
-## 📜 License
-
-MIT © [Victor Cantelli](https://github.com/vcantelli)
+Tools yang Digunakan:
+Express.js → HTTP server
+Prisma ORM → akses database
+Jest → unit testing
+Swagger (OpenAPI) → dokumentasi API
+Winston → Logger 
+Prometheus + Grafana → monitoring performa
+ESLint + Prettier → clean code enforcement
+Create Apps CRUDS (Create/Read/Delete/Update/Search) with that description and structure typescript version in node js express    
