@@ -1,27 +1,29 @@
-# Build Stage
-FROM node:18-alpine as build
+# Etapa 1: build
+FROM node:20-alpine AS builder
 
 WORKDIR /app
+
 COPY package*.json ./
 RUN npm install
+
 COPY . .
+
 RUN npx prisma generate
 RUN npm run build
 
-# Production Stage
-FROM node:18-alpine as production
+# Etapa 2: production
+FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY --from=builder /app/package*.json ./
+RUN npm install --omit=dev
 
-RUN npm ci --only=production
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
 
-# Copy built application and necessary files from the build stage
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/.env.example .env
-COPY --from=build /app/prisma ./prisma
-COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
+RUN npx prisma generate
 
-# Run migrations before starting the application
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/index.js"]
+EXPOSE 3000
+
+CMD npx prisma db push && node dist/main/server.js
